@@ -1,5 +1,6 @@
 import database from "../../database.js";
 
+
 export const GetAllProducts = (req, res) => {
   return res.status(200).send(database)
 }
@@ -9,7 +10,9 @@ export const AddNewProduct = (req, res) => {
     return database.some((product) => product[field] === value);
   };
   try {
-    const { title, img, price, tags, url, description } = req.body;
+    const { title, price, tags, url, description } = req.body;
+    const img = req.file
+
 
     if (checkDuplicate(database, 'title', title)) {
       return res.status(400).send({ message: 'Já existe uma atividade com esse nome' });
@@ -21,7 +24,7 @@ export const AddNewProduct = (req, res) => {
 
     const id = database.length + 1;
 
-    const product = { id, title, img, price, tags, url, description };
+    const product = { id, title, image: img.path, price, tags: tags.split(","), url, description };
 
     database.push(product);
 
@@ -49,3 +52,4 @@ export const DeleteProduct = (req, res) => {
     return res.status(500).send({ message: 'Internal server error', error: error.message });
   }
 }
+
