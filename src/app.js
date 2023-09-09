@@ -1,10 +1,12 @@
 import dotenv from 'dotenv';
+dotenv.config()
+
 import express from 'express';
 import mongoose from 'mongoose';
 import router from './router.js';
-
-dotenv.config();
+import morgan from 'morgan';
 const app = express();
+
 
 // Configurar CORS
 app.use(function (req, res, next) {
@@ -26,7 +28,7 @@ mongoose.connect(process.env.MONGO_URL, {
 })
   .then(() => {
     console.log('Conexão com o MongoDB estabelecida com sucesso.');
-
+    app.use(morgan('dev'))
     app.use(router);
   })
   .catch((error) => {

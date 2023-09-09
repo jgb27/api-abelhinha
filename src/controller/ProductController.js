@@ -11,8 +11,8 @@ export const GetAllProducts = async (req, res) => {
 
 export const AddNewProduct = async (req, res) => {
   try {
-    const { title, price, tags, url, description } = req.body;
-    const img = req.file;
+    const { title, price, tags, url: link, description } = req.body;
+    const { location: url } = req.file;
 
     const existingProduct = await Product.findOne({ $or: [{ title }, { url }] });
 
@@ -24,9 +24,9 @@ export const AddNewProduct = async (req, res) => {
       title,
       price,
       tags: tags.split(','),
-      url,
+      url: link,
       description,
-      image: img.path,
+      image: url,
     });
 
     await product.save();
