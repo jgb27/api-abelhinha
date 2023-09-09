@@ -1,55 +1,54 @@
-import database from "../../database.js";
+import Product from '../models/Product.js';
 
-
-export const GetAllProducts = (req, res) => {
-  return res.status(200).send(database)
-}
-
-export const AddNewProduct = (req, res) => {
-  const checkDuplicate = (database, field, value) => {
-    return database.some((product) => product[field] === value);
-  };
+export const GetAllProducts = async (req, res) => {
   try {
-    const { title, price, tags, url, description } = req.body;
-    const img = req.file
-
-
-    if (checkDuplicate(database, 'title', title)) {
-      return res.status(400).send({ message: 'Já existe uma atividade com esse nome' });
-    }
-
-    if (checkDuplicate(database, 'url', url)) {
-      return res.status(400).send({ message: 'Já existe uma atividade com esse link' });
-    }
-
-    const id = database.length + 1;
-
-    const product = { id, title, image: img.path, price, tags: tags.split(","), url, description };
-
-    database.push(product);
-
-    return res.status(201).send({ message: 'Produto registrado com sucesso', product });
+    const products = await Product.find();
+    return res.status(200).json(products);
   } catch (error) {
-    return res.status(500).send({ message: 'Internal server error', error: error.message });
+    return res.status(500).json({ message: 'Internal server error', error: error.message });
   }
 }
 
-export const DeleteProduct = (req, res) => {
+export const AddNewProduct = async (req, res) => {
+  try {
+    const { title, price, tags, url, description } = req.body;
+    const img = req.file;
+
+    const existingProduct = await Product.findOne({ $or: [{ title }, { url }] });
+
+    if (existingProduct) {
+      return res.status(400).json({ message: 'Já existe um produto com este título ou URL' });
+    }
+
+    const product = new Product({
+      title,
+      price,
+      tags: tags.split(','),
+      url,
+      description,
+      image: img.path,
+    });
+
+    await product.save();
+
+    return res.status(201).json({ message: 'Produto registrado com sucesso', product });
+  } catch (error) {
+    return res.status(500).json({ message: 'Internal server error', error: error.message });
+  }
+}
+
+export const DeleteProduct = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const indiceConta = database.findIndex((conta) => conta.id === Number(id));
+    const deletedProduct = await Product.findByIdAndDelete(id);
 
-    if (indiceConta === -1) {
-      return res.status(404).send({ message: 'Produto não encontrada' });
+    if (!deletedProduct) {
+      return res.status(404).json({ message: 'Produto não encontrado' });
     }
 
-    database.splice(indiceConta, 1);
-
-    return res.status(200).send({ message: 'Produto excluído com sucesso' });
-
+    return res.status(200).json({ message: 'Produto excluído com sucesso' });
   } catch (error) {
-    return res.status(500).send({ message: 'Internal server error', error: error.message });
+    return res.status(500).json({ message: 'Internal server error', error: error.message });
   }
 }
-
