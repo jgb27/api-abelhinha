@@ -1,12 +1,12 @@
 import mongoose from 'mongoose';
 
 const productSchema = new mongoose.Schema({
-  title: String,
+  name: String,
   price: Number,
   tags: [String],
   url: String,
   description: String,
-  image: String,
+  imageUrl: String,
 });
 
 const Product = mongoose.model('Product', productSchema);

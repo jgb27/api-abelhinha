@@ -11,22 +11,22 @@ export const GetAllProducts = async (req, res) => {
 
 export const AddNewProduct = async (req, res) => {
   try {
-    const { title, price, tags, url: link, description } = req.body;
+    const { name, price, tags, url: link, description } = req.body;
     const { location: url } = req.file;
 
-    const existingProduct = await Product.findOne({ $or: [{ title }, { url }] });
+    const existingProduct = await Product.findOne({ $or: [{ name }, { url }] });
 
     if (existingProduct) {
       return res.status(400).json({ message: 'Já existe um produto com este título ou URL' });
     }
 
     const product = new Product({
-      title,
+      name,
       price,
       tags: tags.split(','),
       url: link,
       description,
-      image: url,
+      imageUrl: url,
     });
 
     await product.save();
