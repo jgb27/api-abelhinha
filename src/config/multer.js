@@ -10,13 +10,13 @@ import { S3Client, AbortMultipartUploadCommand } from "@aws-sdk/client-s3";
 const __filename = fileURLToPath(import.meta.url);
 
 const s3 = new S3Client({
-  region: process.env.AWS_DEFAULT_REGION,
+  region: process.env.MY_AWS_DEFAULT_REGION,
   credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    accessKeyId: process.env.MY_AWS_ACCESS_KEY,
+    secretAccessKey: process.env.MY_AWS_SECRET_ACCESS_KEY,
   }
 });
-console.log(process.env.AWS_DEFAULT_REGION)
+console.log(process.env.MY_AWS_DEFAULT_REGION)
 
 const storage = multerS3({
   s3: s3,
