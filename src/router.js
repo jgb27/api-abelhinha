@@ -27,7 +27,6 @@ router.post("/verify", (req, res) => {
   return res.status(200).json({ token: verify })
 });
 
-
 router.use(Authenticate);
 router.post("/product", upload.single("image"), AddNewProduct);
 router.delete("/product/:id", DeleteProduct);
