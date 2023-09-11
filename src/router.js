@@ -15,9 +15,9 @@ router.post("/verify", (req, res) => {
 
   const verify = jwt.verify(token, process.env.AWS_SECRET_ACCESS_KEY, (error, decodedToken) => {
     if (error) {
-      return res.status(401).json({ message: 'Token de autenticação inválido' });
+      return res.status(401).json({ message: 'Token de autenticação inválido', data: false });
     } else {
-      return true
+      return  res.status(200).json({ message: 'Token de autenticação inválido', data: true });
     }
   });
 
