@@ -16,7 +16,7 @@ export const AddNewProduct = async (req, res) => {
 
     const existingProduct = await Product.findOne({ $or: [{ name }, { url }] });
 
-    if (existingProduct) {a
+    if (existingProduct) {
       return res.status(400).json({ message: 'Já existe um produto com este título ou URL' });
     }
 
@@ -35,6 +35,18 @@ export const AddNewProduct = async (req, res) => {
   } catch (error) {
     return res.status(500).json({ message: 'Internal server error', error: error.message });
   }
+}
+
+export const FindProductByName = async (req, res) => {
+  const { name, tag } = req.params;
+  const product = await Product.find({ name: { $regex: name, $options: 'i' } })
+  return res.status(200).json({ product })
+}
+
+export const FindProductByTag = async (req, res) => {
+  const { tag } = req.params;
+  const product = await Product.find({ tags: { $regex: tag, $options: 'i' } })
+  return res.status(200).json({ product })
 }
 
 export const DeleteProduct = async (req, res) => {
