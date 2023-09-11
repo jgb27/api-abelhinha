@@ -26,7 +26,7 @@ export const Login = async (req, res) => {
       return res.status(401).json({ message: 'Senha inválida' });
     }
 
-    const token = jwt.sign({ userId: user._id }, process.env.AWS_SECRET_ACCESS_KEY, {
+    const token = jwt.sign({ userId: user._id }, process.env.MY_AWS_SECRET_ACCESS_KEY, {
       expiresIn: '12h',
     });
 
