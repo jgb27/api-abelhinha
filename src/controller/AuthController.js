@@ -44,7 +44,7 @@ export const Authenticate = (req, res, next) => {
     return res.status(401).json({ message: 'Token de autenticação não fornecido' });
   }
 
-  jwt.verify(token, process.env.AWS_SECRET_ACCESS_KEY, (error, decodedToken) => {
+  jwt.verify(token, process.env.MY_AWS_SECRET_ACCESS_KEY, (error, decodedToken) => {
     if (error) {
       return res.status(401).json({ message: 'Token de autenticação inválido' });
     }
