@@ -5,17 +5,13 @@ import express from 'express';
 import mongoose from 'mongoose';
 import router from './router.js';
 import morgan from 'morgan';
+import cors from 'cors';
+
 const app = express();
 
 
 // Configurar CORS
-app.use(function (req, res, next) {
-  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:5173');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE');
-  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  next();
-});
+app.use(cors());
 
 // Diretório 'uploads' como estático
 app.use(express.static('uploads'));
@@ -28,7 +24,7 @@ mongoose.connect(process.env.MONGO_URL, {
 })
   .then(() => {
     console.log('Conexão com o MongoDB estabelecida com sucesso.');
-    app.use(morgan('dev'))
+    app.use(morgan('common'))
     app.use(router);
   })
   .catch((error) => {

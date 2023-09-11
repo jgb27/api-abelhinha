@@ -16,7 +16,7 @@ export const AddNewProduct = async (req, res) => {
 
     const existingProduct = await Product.findOne({ $or: [{ name }, { url }] });
 
-    if (existingProduct) {
+    if (existingProduct) {a
       return res.status(400).json({ message: 'Já existe um produto com este título ou URL' });
     }
 
