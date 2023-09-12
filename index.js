@@ -17,4 +17,3 @@ Client.connect()
   .catch((error) => {
     console.error('Erro ao conectar:', error);
   });
-
