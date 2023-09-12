@@ -1,32 +1,26 @@
-import User from '../models/User.js';
 import jwt from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
-
-const verifyPassword = async function (password, truePassword) {
-  try {
-    return await bcrypt.compare(password, truePassword);
-  } catch (error) {
-    throw error;
-  }
-};
+import { Client } from '../../database.js';
+import { verifyPassword } from '../utils/AccessUtils.js'
 
 export const Login = async (req, res) => {
   try {
     const { name, password } = req.body;
 
-    const user = await User.findOne({ name });
+    const query = 'SELECT * FROM users WHERE name = $1;';
+    const { rows } = await Client.query(query, [name]);
 
-    if (!user) {
+    if (rows.length === 0) {
       return res.status(401).json({ message: 'Login inválido' });
     }
 
-    const senha = await verifyPassword(password, user.password)
+    const user = rows[0];
+    const senhaValida = await verifyPassword(password, user.password);
 
-    if (!senha) {
+    if (!senhaValida) {
       return res.status(401).json({ message: 'Senha inválida' });
     }
 
-    const token = jwt.sign({ userId: user._id }, process.env.MY_AWS_SECRET_ACCESS_KEY, {
+    const token = jwt.sign({ userId: user.id }, process.env.MY_AWS_SECRET_ACCESS_KEY, {
       expiresIn: '12h',
     });
 
@@ -37,7 +31,6 @@ export const Login = async (req, res) => {
 }
 
 export const Authenticate = (req, res, next) => {
-
   const token = req.headers['authorization'];
 
   if (!token) {
@@ -50,7 +43,6 @@ export const Authenticate = (req, res, next) => {
     }
 
     req.user = decodedToken;
-
     next();
   });
 }

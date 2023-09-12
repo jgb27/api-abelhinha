@@ -3,11 +3,8 @@ dotenv.config()
 import multer from 'multer';
 import crypto from 'crypto';
 import { fileURLToPath } from 'url';
-import { dirname, resolve } from 'path';
 import multerS3 from 'multer-s3';
-import { S3Client, AbortMultipartUploadCommand } from "@aws-sdk/client-s3";
-
-const __filename = fileURLToPath(import.meta.url);
+import { S3Client } from "@aws-sdk/client-s3";
 
 const s3 = new S3Client({
   region: process.env.MY_AWS_DEFAULT_REGION,
@@ -16,7 +13,7 @@ const s3 = new S3Client({
     secretAccessKey: process.env.MY_AWS_SECRET_ACCESS_KEY,
   }
 });
-console.log(process.env.MY_AWS_DEFAULT_REGION)
+console.log("Região de hospedagem da S3: " + process.env.MY_AWS_DEFAULT_REGION)
 
 const storage = multerS3({
   s3: s3,
