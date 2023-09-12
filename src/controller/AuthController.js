@@ -6,7 +6,7 @@ export const Login = async (req, res) => {
   try {
     const { name, password } = req.body;
 
-    const query = 'SELECT * FROM users WHERE name = $1;';
+    const query = 'SELECT * FROM users WHERE username = $1;';
     const { rows } = await Client.query(query, [name]);
 
     if (rows.length === 0) {

@@ -3,7 +3,7 @@ import { makeHashPassword } from "../utils/AccessUtils.js"
 
 export const createUser = async (req, res) => {
   try {
-    const { name, password } = req.body;
+    const { name, password, email } = req.body;
 
     const checkDuplicateQuery = 'SELECT * FROM users WHERE username = $1;';
     const { rows: existingUsers } = await Client.query(checkDuplicateQuery, [name]);
@@ -12,9 +12,9 @@ export const createUser = async (req, res) => {
       return res.status(400).json({ message: 'Já existe um usuário com este nome' });
     }
 
-    const insertQuery = 'INSERT INTO users (username, password) VALUES ($1, $2) RETURNING *;';
+    const insertQuery = 'INSERT INTO users (username, password, email) VALUES ($1, $2, $3) RETURNING *;';
     const hashPassword = await makeHashPassword(password)
-    const values = [name, hashPassword];
+    const values = [name, hashPassword, email];
 
     const { rows: newUser } = await Client.query(insertQuery, values);
 

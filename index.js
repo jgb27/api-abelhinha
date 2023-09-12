@@ -6,8 +6,8 @@ const PORT = process.env.PORT || 2727;
 
 Client.connect()
   .then(async () => {
-    await Client.query(CREATE_TABLE_PRODUCT)
     await Client.query(CREATE_TABLE_USER)
+    await Client.query(CREATE_TABLE_PRODUCT)
 
     app.listen(PORT, () => {
       console.log(`Banco de dados online: ${process.env.PG_HOST}`);
