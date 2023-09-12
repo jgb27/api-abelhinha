@@ -1,17 +1,18 @@
 import express from "express";
-import { AddNewProduct, DeleteProduct, FindProductByName, FindProductByTag, GetAllProducts } from "./controller/ProductController.js";
+import { addNewProduct, deleteProduct, findProductByName, findProductByTag, getAllProducts } from "./controller/ProductController.js";
 import { Login, Authenticate } from "./controller/AuthController.js";
 import { upload } from "./config/multer.js"
-import { CreateUser } from "./controller/UserController.js";
+import { createUser, findUserById } from "./controller/UserController.js";
 import jwt from 'jsonwebtoken';
 
 const router = express.Router();
 
 router.post("/login", Login);
-router.post("/register", CreateUser);
-router.get("/product", GetAllProducts);
-router.get("/product/name/:name", FindProductByName);
-router.get("/product/tag/:tag", FindProductByTag);
+router.post("/register", createUser);
+router.get("/product", getAllProducts);
+router.get("/product/name/:name", findProductByName);
+router.get("/product/tag/:tag", findProductByTag);
+router.get("/user/:id", findUserById);
 
 router.post("/verify", (req, res) => {
   const { token } = req.body;
@@ -28,7 +29,7 @@ router.post("/verify", (req, res) => {
 });
 
 router.use(Authenticate);
-router.post("/product", upload.single("image"), AddNewProduct);
-router.delete("/product/:id", DeleteProduct);
+router.post("/product", upload.single("image"), addNewProduct);
+router.delete("/product/:id", deleteProduct);
 
 export default router;
