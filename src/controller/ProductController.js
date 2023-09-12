@@ -48,7 +48,7 @@ export const findProductByTag = async (req, res) => {
 export const deleteProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    const query = 'DELETE FROM products WHERE id = $1 RETURNING *;';
+    const query = 'DELETE FROM products WHERE _id = $1 RETURNING *;';
     const { rows: deletedProduct } = await Client.query(query, [id]);
 
     if (deletedProduct.length === 0) {
