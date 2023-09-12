@@ -6,7 +6,7 @@ const CREATE_TABLE_PRODUCT = `
     tags TEXT[],
     url VARCHAR(255),
     description TEXT,
-    imageUrl VARCHAR(255),
+    image_url VARCHAR(255),
     user_id INT REFERENCES users(id)
   );
 `

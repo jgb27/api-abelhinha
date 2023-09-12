@@ -21,7 +21,7 @@ export const addNewProduct = async (req, res) => {
       return res.status(400).json({ message: 'Já existe um produto com este título ou URL' });
     }
 
-    const insertQuery = 'INSERT INTO products (name, price, tags, url, description, imageUrl, user_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *;';
+    const insertQuery = 'INSERT INTO products (name, price, tags, url, description, image_url, user_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *;';
     const values = [name, price, tags.split(','), url, description, imageUrl, req.user.userId];
     const { rows: newProduct } = await Client.query(insertQuery, values);
 
