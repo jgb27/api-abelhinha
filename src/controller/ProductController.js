@@ -1,4 +1,13 @@
 import { Client } from '../../database.js';
+import { S3Client, DeleteObjectCommand } from '@aws-sdk/client-s3';
+
+const s3 = new S3Client({
+  region: process.env.MY_AWS_DEFAULT_REGION,
+  credentials: {
+    accessKeyId: process.env.MY_AWS_ACCESS_KEY,
+    secretAccessKey: process.env.MY_AWS_SECRET_ACCESS_KEY,
+  }
+});
 
 export const getAllProducts = async (req, res) => {
   try {
@@ -48,6 +57,14 @@ export const findProductByTag = async (req, res) => {
 export const deleteProduct = async (req, res) => {
   try {
     const { id } = req.params;
+    const findId = 'SELECT image_url FROM products WHERE _id = $1;';
+    const { rows: findKey } = await Client.query(findId, [id]);
+
+    await s3.send(new DeleteObjectCommand({
+      Bucket: 'abelhinha-bucket',
+      Key: findKey[0].image_url.split('/')[3]
+    }))
+
     const query = 'DELETE FROM products WHERE _id = $1 RETURNING *;';
     const { rows: deletedProduct } = await Client.query(query, [id]);
 
