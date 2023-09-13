@@ -10,7 +10,7 @@ const CREATE_TABLE_PRODUCT = `
     description TEXT,
     image_url VARCHAR(255),
     user_id UUID REFERENCES users(_id),
-    PRIMARY KEY (id)
+    PRIMARY KEY (_id)
   );
 `
 
