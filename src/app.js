@@ -12,9 +12,8 @@ const app = express();
 app.use(cors());
 
 // Diretório 'uploads' como estático
-app.use(express.static('uploads'));
 app.use(express.json());
-app.use(morgan('common'))
+app.use(morgan(':method => :url - :status | :res[content-length] - :response-time ms'))
 app.use(router);
 
 export default app;
