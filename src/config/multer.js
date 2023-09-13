@@ -2,7 +2,6 @@ import dotenv from 'dotenv';
 dotenv.config()
 import multer from 'multer';
 import crypto from 'crypto';
-import { fileURLToPath } from 'url';
 import multerS3 from 'multer-s3';
 import { S3Client } from "@aws-sdk/client-s3";
 
