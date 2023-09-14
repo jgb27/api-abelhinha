@@ -30,6 +30,7 @@ router.post("/verify", (req, res) => {
 router.use(Authenticate);
 router.post("/product", upload.single("image"), addNewProduct);
 router.delete("/product/:id", deleteProduct);
+
 router.get("/users", getAllUser);
 router.delete("/users/:id", deleteUser);
 
