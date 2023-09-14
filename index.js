@@ -1,6 +1,6 @@
 import app from "./src/app.js";
 import { Client } from './database.js';
-import { CREATE_TABLE_PRODUCT, CREATE_TABLE_USER } from './src/querys.js'
+import { CREATE_TABLE_PRODUCT, CREATE_TABLE_USER } from './src/createTable.js'
 
 const PORT = process.env.PORT || 2727;
 

@@ -4,10 +4,10 @@ import { verifyPassword } from '../utils/AccessUtils.js'
 
 export const Login = async (req, res) => {
   try {
-    const { name, password } = req.body;
+    const { username, password } = req.body;
 
     const query = 'SELECT * FROM users WHERE username = $1;';
-    const { rows } = await Client.query(query, [name]);
+    const { rows } = await Client.query(query, [username]);
 
     if (rows.length === 0) {
       return res.status(401).json({ message: 'Login inválido' });

@@ -3,18 +3,11 @@ import { makeHashPassword } from "../utils/AccessUtils.js"
 
 export const createUser = async (req, res) => {
   try {
-    const { name, password, email } = req.body;
+    const { name, username, password, email, fone, role } = req.body;
 
-    const checkDuplicateQuery = 'SELECT * FROM users WHERE username = $1;';
-    const { rows: existingUsers } = await Client.query(checkDuplicateQuery, [name]);
-
-    if (existingUsers.length > 0) {
-      return res.status(400).json({ message: 'Já existe um usuário com este nome' });
-    }
-
-    const insertQuery = 'INSERT INTO users (username, password, email) VALUES ($1, $2, $3) RETURNING *;';
+    const insertQuery = 'INSERT INTO users (name, username, password, email, fone, role) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;';
     const hashPassword = await makeHashPassword(password)
-    const values = [name, hashPassword, email];
+    const values = [name, username, hashPassword, email, fone, role];
 
     const { rows: newUser } = await Client.query(insertQuery, values);
 
@@ -24,15 +17,11 @@ export const createUser = async (req, res) => {
   }
 }
 
-export const findUserById = async (req, res) => {
+export const getAllUser = async (req, res) => {
   try {
-    const { id } = req.params;
-    const query = 'SELECT id, name FROM users WHERE id=$1';
-    const values = [id];
-    const { rows: user } = await Client.query(query, values)
-    const { id: _id, name } = user[0];
-    return res.status(200).json({ user: { _id, name } });
-
+    const getQuery = 'SELECT name, username, email, fone, role FROM users;';
+    const { rows: users } = await Client.query(getQuery);
+    return res.status(200).json({ users })
   } catch (error) {
     return res.status(500).json({ message: 'Internal server error', error: error.message });
   }
