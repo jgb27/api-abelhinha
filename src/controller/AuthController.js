@@ -43,7 +43,12 @@ export const Authenticate = async (req, res, next) => {
     }
 
     req.user = decodedToken;
-    console.log(req.user)
-    next();
   });
+
+  const query = 'SELECT role FROM users WHERE _id = $1;';
+  const { rows: role } = await Client.query(query, [req.user.userId]);
+
+  if (role[0].role != 'admin') return res.status(401).json({ message: 'Você não tem autorização' })
+
+  next();
 }
