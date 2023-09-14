@@ -21,7 +21,17 @@ export const getAllUser = async (req, res) => {
   try {
     const getQuery = 'SELECT name, username, email, fone, role FROM users;';
     const { rows: users } = await Client.query(getQuery);
-    return res.status(200).json({ users })
+    return res.status(200).json(users)
+  } catch (error) {
+    return res.status(500).json({ message: 'Internal server error', error: error.message });
+  }
+}
+
+export const getUser = async (req, res) => {
+  try {
+    const getQuery = 'SELECT name, username, email, fone, role FROM users WHERE _id = $1;';
+    const { rows: user } = await Client.query(getQuery, [req.user.userId]);
+    return res.status(200).json({ user: user[0] })
   } catch (error) {
     return res.status(500).json({ message: 'Internal server error', error: error.message });
   }

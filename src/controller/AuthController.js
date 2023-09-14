@@ -10,21 +10,21 @@ export const Login = async (req, res) => {
     const { rows } = await Client.query(query, [username]);
 
     if (rows.length === 0) {
-      return res.status(401).json({ message: 'Login inválido' });
+      return res.status(401).json({ message: 'Login inválido', label: 'username' });
     }
 
     const user = rows[0];
     const senhaValida = await verifyPassword(password, user.password);
 
     if (!senhaValida) {
-      return res.status(401).json({ message: 'Senha inválida' });
+      return res.status(401).json({ message: 'Senha inválida', label: 'password' });
     }
 
     const token = jwt.sign({ userId: user._id }, process.env.MY_AWS_SECRET_ACCESS_KEY, {
       expiresIn: '12h',
     });
 
-    return res.status(200).json({ message: 'Login bem-sucedido', token });
+    return res.status(200).json({ message: 'Login bem-sucedido', token, role: user.role });
   } catch (error) {
     return res.status(500).json({ message: 'Internal server error', error: error.message });
   }
@@ -45,10 +45,11 @@ export const Authenticate = async (req, res, next) => {
     req.user = decodedToken;
   });
 
-  const query = 'SELECT role FROM users WHERE _id = $1;';
-  const { rows: role } = await Client.query(query, [req.user.userId]);
 
-  if (role[0].role != 'admin') return res.status(401).json({ message: 'Você não tem autorização' })
+  const query = 'SELECT role FROM users WHERE _id = $1;';
+  const { rows: user } = await Client.query(query, [req.user.userId]);
+
+  if (user[0].role != 'admin') return res.status(401).json({ message: 'Você não tem autorização' })
 
   next();
 }

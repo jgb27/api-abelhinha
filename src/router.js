@@ -2,7 +2,7 @@ import express from "express";
 import { addNewProduct, deleteProduct, findProductByName, findProductByTag, getAllProducts } from "./controller/ProductController.js";
 import { Login, Authenticate } from "./controller/AuthController.js";
 import { upload } from "./config/multer.js"
-import { createUser, deleteUser, getAllUser } from "./controller/UserController.js";
+import { createUser, deleteUser, getAllUser, getUser } from "./controller/UserController.js";
 import jwt from 'jsonwebtoken';
 
 const router = express.Router();
@@ -32,6 +32,7 @@ router.post("/product", upload.single("image"), addNewProduct);
 router.delete("/product/:id", deleteProduct);
 
 router.get("/users", getAllUser);
+router.get("/user", getUser);
 router.delete("/users/:id", deleteUser);
 
 export default router;
