@@ -20,7 +20,7 @@ export const Login = async (req, res) => {
       return res.status(401).json({ message: 'Senha inválida' });
     }
 
-    const token = jwt.sign({ userId: user.id }, process.env.MY_AWS_SECRET_ACCESS_KEY, {
+    const token = jwt.sign({ userId: user._id }, process.env.MY_AWS_SECRET_ACCESS_KEY, {
       expiresIn: '12h',
     });
 
@@ -30,7 +30,7 @@ export const Login = async (req, res) => {
   }
 }
 
-export const Authenticate = (req, res, next) => {
+export const Authenticate = async (req, res, next) => {
   const token = req.headers['authorization'];
 
   if (!token) {
@@ -43,6 +43,7 @@ export const Authenticate = (req, res, next) => {
     }
 
     req.user = decodedToken;
+    console.log(req.user)
     next();
   });
 }

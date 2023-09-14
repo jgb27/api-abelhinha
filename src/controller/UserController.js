@@ -26,3 +26,19 @@ export const getAllUser = async (req, res) => {
     return res.status(500).json({ message: 'Internal server error', error: error.message });
   }
 }
+
+export const deleteUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const query = 'DELETE FROM users WHERE _id = $1 RETURNING *;';
+    const { rows: deletedUser } = await Client.query(query, [id]);
+
+    if (deletedUser.length === 0) {
+      return res.status(404).json({ message: 'Produto não encontrado' });
+    }
+
+    return res.status(200).json({ message: 'Produto excluído com sucesso' });
+  } catch (error) {
+
+  }
+}
