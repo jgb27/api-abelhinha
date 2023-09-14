@@ -1,15 +1,15 @@
 import express from "express";
 import { addNewProduct, deleteProduct, findProductByName, findProductByTag, getAllProducts } from "./controller/ProductController.js";
-import { Login, Authenticate } from "./controller/AuthController.js";
+import { Login, Authenticate, AuthenticateCommomUser } from "./controller/AuthController.js";
 import { upload } from "./config/multer.js"
-import { createUser, deleteUser, getAllUser, getUser } from "./controller/UserController.js";
+import { createUser, deleteUser, getAllUser, getProductByUser, getUser } from "./controller/UserController.js";
 import jwt from 'jsonwebtoken';
 
 const router = express.Router();
 
 router.post("/login", Login);
 router.post("/register", createUser);
-router.get("/product", getAllProducts);
+router.get("/products", getAllProducts);
 router.get("/product/name/:name", findProductByName);
 router.get("/product/tag/:tag", findProductByTag);
 
@@ -26,6 +26,9 @@ router.post("/verify", (req, res) => {
 
   return res.status(200).json({ token: verify })
 });
+
+router.use(AuthenticateCommomUser)
+router.get("/product", getProductByUser)
 
 router.use(Authenticate);
 router.post("/product", upload.single("image"), addNewProduct);

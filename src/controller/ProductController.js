@@ -9,7 +9,7 @@ const s3 = new S3Client({
   }
 });
 
-export const getAllProducts = async (req, res) => {
+export const getAllProducts = async (_req, res) => {
   try {
     const query = 'SELECT * FROM products;';
     const { rows } = await Client.query(query)

@@ -13,6 +13,14 @@ const CREATE_TABLE_PRODUCT = `
   );
 `
 
+const CREATE_TABLE_PRODUCT_USER = `
+  CREATE TABLE IF NOT EXISTS user_product (
+    user_id UUID NOT NULL REFERENCES users(_id),
+    product_id UUID NOT NULL REFERENCES products(_id),
+    PRIMARY KEY (user_id, product_id)
+  );
+`
+
 const CREATE_TABLE_USER = `
   CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
   CREATE TABLE IF NOT EXISTS users (
@@ -30,4 +38,5 @@ const CREATE_TABLE_USER = `
 export {
   CREATE_TABLE_PRODUCT,
   CREATE_TABLE_USER,
+  CREATE_TABLE_PRODUCT_USER
 }

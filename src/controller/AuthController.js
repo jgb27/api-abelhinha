@@ -30,6 +30,23 @@ export const Login = async (req, res) => {
   }
 }
 
+export const AuthenticateCommomUser = async (req, res, next) => {
+  const token = req.headers['authorization'];
+
+  if (!token) {
+    return res.status(401).json({ message: 'Token de autenticação não fornecido' });
+  }
+
+  jwt.verify(token, process.env.MY_AWS_SECRET_ACCESS_KEY, (error, decodedToken) => {
+    if (error) {
+      return res.status(401).json({ message: 'Token de autenticação inválido' });
+    }
+
+    req.user = decodedToken;
+    next();
+  });
+}
+
 export const Authenticate = async (req, res, next) => {
   const token = req.headers['authorization'];
 
