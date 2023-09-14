@@ -20,18 +20,13 @@ export const getAllProducts = async (req, res) => {
 }
 export const addNewProduct = async (req, res) => {
   try {
-    const { name, price, tags, url, description } = req.body;
+    const { name, price, tags: tag, url, description } = req.body;
     const imageUrl = req.file ? req.file.location : null;
 
-    const checkDuplicateQuery = 'SELECT * FROM products WHERE name = $1 OR url = $2;';
-    const { rows: existingProducts } = await Client.query(checkDuplicateQuery, [name, url]);
+    const tags = tag.replace(/\s/g, '').split(',')
 
-    if (existingProducts.length > 0) {
-      return res.status(400).json({ message: 'Já existe um produto com este título ou URL' });
-    }
-
-    const insertQuery = 'INSERT INTO products (name, price, tags, url, description, image_url, user_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *;';
-    const values = [name, price, tags.split(','), url, description, imageUrl, req.user.userId];
+    const insertQuery = 'INSERT INTO products (name, price, tags, url, description, image_url) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;';
+    const values = [name, price, tags, url, description, imageUrl];
     const { rows: newProduct } = await Client.query(insertQuery, values);
 
     return res.status(201).json({ message: 'Produto registrado com sucesso', product: newProduct[0] });
@@ -49,8 +44,8 @@ export const findProductByName = async (req, res) => {
 
 export const findProductByTag = async (req, res) => {
   const { tag } = req.params;
-  const query = 'SELECT * FROM products WHERE LOWER(tags) LIKE $1;';
-  const { rows } = await Client.query(query, [`%${tag.toLowerCase()}%`]);
+  const query = 'SELECT * FROM products WHERE $1 = ANY(tags);';
+  const { rows } = await Client.query(query, [`${tag.toLowerCase()}`]);
   return res.status(200).json({ product: rows });
 }
 

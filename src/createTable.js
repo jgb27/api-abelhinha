@@ -3,10 +3,10 @@ const CREATE_TABLE_PRODUCT = `
   CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
   CREATE TABLE IF NOT EXISTS products (
     _id UUID UNIQUE DEFAULT uuid_generate_v4(),
-    name VARCHAR(255) NOT NULL,
+    name VARCHAR(255) UNIQUE NOT NULL,
     price DECIMAL(10, 2) NOT NULL,
     tags TEXT[],
-    url VARCHAR(255),
+    url VARCHAR(255) UNIQUE,
     description TEXT,
     image_url VARCHAR(255),
     PRIMARY KEY (_id)
