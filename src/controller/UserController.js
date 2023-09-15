@@ -6,8 +6,8 @@ export const createUser = async (req, res) => {
     const { name, username, password, email, fone, role } = req.body;
 
     const insertQuery = 'INSERT INTO users (name, username, password, email, fone, role) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;';
-    const values = [name, username, hashPassword, email, fone, role];
     const hashPassword = await makeHashPassword(password)
+    const values = [name, username, hashPassword, email, fone, role];
 
     const { rows: newUser } = await Client.query(insertQuery, values);
 
