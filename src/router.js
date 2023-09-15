@@ -29,13 +29,13 @@ router.post("/verify", (req, res) => {
 
 router.use(AuthenticateCommomUser)
 router.get("/product", getProductByUser)
+router.get("/user", getUser);
 
 router.use(Authenticate);
 router.post("/product", upload.single("image"), addNewProduct);
 router.delete("/product/:id", deleteProduct);
 
 router.get("/users", getAllUser);
-router.get("/user", getUser);
 router.delete("/users/:id", deleteUser);
 
 export default router;
