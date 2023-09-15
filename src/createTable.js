@@ -9,6 +9,7 @@ const CREATE_TABLE_PRODUCT = `
     url VARCHAR(255) UNIQUE,
     description TEXT,
     image_url VARCHAR(255),
+    pdf_url VARCHAR(255),
     PRIMARY KEY (_id)
   );
 `

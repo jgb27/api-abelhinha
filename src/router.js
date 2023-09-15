@@ -32,7 +32,7 @@ router.get("/product", getProductByUser)
 router.get("/user", getUser);
 
 router.use(Authenticate);
-router.post("/product", upload.single("image"), addNewProduct);
+router.post("/product", upload.fields([{ name: 'image', maxCount: 1 }, { name: 'pdf', maxCount: 1 }]), addNewProduct);
 router.delete("/product/:id", deleteProduct);
 
 router.get("/users", getAllUser);

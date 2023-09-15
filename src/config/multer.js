@@ -14,33 +14,36 @@ const s3 = new S3Client({
 });
 console.log("Região de hospedagem da S3: " + process.env.MY_AWS_DEFAULT_REGION)
 
-const storage = multerS3({
+const imageStorage = multerS3({
   s3: s3,
   bucket: 'abelhinha-bucket',
   contentType: multerS3.AUTO_CONTENT_TYPE,
   acl: 'public-read',
   key: (req, file, cb) => {
-    const extensionFile = file.originalname.split('.')[1];
-    crypto.randomBytes(16, (err, hash) => {
-      if (err) cb(err);
-      cb(null, `${hash.toString('hex')}.${extensionFile}`);
-    });
+    if (file.mimetype.startsWith('image/')) {
+      const extensionFile = file.originalname.split('.')[1];
+      crypto.randomBytes(16, (err, hash) => {
+        if (err) cb(err);
+        cb(null, `image/${process.env.ENVIRONMENT}/${hash.toString('hex')}.${extensionFile}`);
+      });
+    } else if (file.mimetype === 'application/pdf') {
+      cb(null, `ebook/${process.env.ENVIRONMENT} / ${file.originalname} `)
+    } else {
+      cb(new Error('Formato de arquivo não suportado!'))
+    }
   },
 });
 
 const fileFilter = (req, file, cb) => {
-  if (!file.mimetype.startsWith('image/')) {
-    return cb(new Error('Apenas imagens são permitidas!'));
+  if (file.mimetype.startsWith('image/') || file.mimetype === 'application/pdf') {
+    cb(null, true);
+  } else {
+    cb(new Error('Formato de arquivo não suportado!'));
   }
-
-  if (file.size > 5 * 1024 * 1024) {
-    return cb(new Error('A imagem deve ter menos de 5MB!'));
-  }
-
-  cb(null, true);
-};
+}
 
 export const upload = multer({
-  storage: storage,
+  storage: imageStorage,
   fileFilter: fileFilter,
 });
+

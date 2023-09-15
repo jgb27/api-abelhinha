@@ -21,12 +21,14 @@ export const getAllProducts = async (_req, res) => {
 export const addNewProduct = async (req, res) => {
   try {
     const { name, price, tags: tag, url, description } = req.body;
-    const imageUrl = req.file ? req.file.location : null;
+
+    const imageUrl = req.files.image ? req.files.image[0].location : null;
+    const pdfUrl = req.files.pdf ? req.files.pdf[0].location : null;
 
     const tags = tag.replace(/\s/g, '').split(',')
 
-    const insertQuery = 'INSERT INTO products (name, price, tags, url, description, image_url) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;';
-    const values = [name, price, tags, url, description, imageUrl];
+    const insertQuery = 'INSERT INTO products (name, price, tags, url, description, image_url, pdf_url) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *;';
+    const values = [name, price, tags, url, description, imageUrl, pdfUrl];
     const { rows: newProduct } = await Client.query(insertQuery, values);
 
     return res.status(201).json({ message: 'Produto registrado com sucesso', product: newProduct[0] });
