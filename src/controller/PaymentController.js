@@ -1,46 +1,37 @@
 import mercadopago from "mercadopago"
+import { Client } from "../../database.js"
 
 export const CreateOrder = async (req, res) => {
   mercadopago.configure({
     access_token: process.env.TOKEN_MERCADO
   })
 
-  const preferences = await mercadopago.preferences.create({
+  const { _id: id, name: title, price, description } = req.body
+
+  const query = 'SELECT _id FROM users WHERE _id = $1;';
+  const { rows } = await Client.query(query, [req.user.userId]);
+  const user = rows[0];
+  const { _id } = user;
+
+  const { body: preferences } = await mercadopago.preferences.create({
+
     items: [{
-      title: "Colorindo a vida",
-      unit_price: 50.99,
+      id,
+      title,
+      unit_price: Number(price),
       category_id: "learnings",
-      description: "Colorindo a vida toda",
+      description: _id,
       quantity: 1,
-      picture_url: "https://abelhinha-bucket.s3.sa-east-1.amazonaws.com/image/development/77f6a477d686138a360538f82784de68.jpeg"
     }],
-    back_urls: {
-      success: "http://localhost:2727/success",
-      failure: "http://localhost:2727/failure",
-      pending: "http://localhot:2727/pending"
-    },
-    notification_url: "https://f209-2804-d45-9775-c500-985a-9047-4586-3fa1.ngrok.io/webhook"
-  })
+    notification_url: "https://9bc5-2804-d45-9775-c500-985a-9047-4586-3fa1.ngrok.io/webhook"
+  },)
 
-  return res.status(200).send({ preferences: preferences.body })
-}
-
-export const WebHook = async (req, res) => {
-  const payment = req.query;
-  console.log("Bruto: " + payment)
-  try {
-    if (payment.type === 'payment') {
-      console.log(payment['data.id'])
-      const data = await mercadopago.payment.findById(payment['data.id'])
-      console.log(data)
-      const paymentData = {
-        product: [{
-
-        }]
-      }
-    }
-    return res.status(204).send("WebHook")
-  } catch (error) {
-    return res.status(500).send({ message: "Internal server error", error: error.message })
+  const response = {
+    clientId: preferences.clientId,
+    dateCreated: preferences.date_created,
+    item: preferences.items[0],
+    checkout: preferences.init_point,
   }
+
+  return res.status(200).send({ response })
 }
