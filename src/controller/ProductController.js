@@ -62,6 +62,18 @@ export const deleteProduct = async (req, res) => {
       Key: findKey[0].image_url.split('/')[3]
     }))
 
+    const selectQuery = 'SELECT * FROM user_product where product_id=$1;'
+    const { rows: select } = await Client.query(selectQuery, [id]);
+
+    if (select.length != 0) {
+      const deleteQuery = 'DELETE FROM user_product where product_id = $1 RETURNING *;';
+      const { rows } = await Client.query(deleteQuery, [id]);
+
+      if (rows.length === 0) {
+        return res.status(404).json({ message: 'Produto não encontrado' });
+      }
+    }
+
     const query = 'DELETE FROM products WHERE _id = $1 RETURNING *;';
     const { rows: deletedProduct } = await Client.query(query, [id]);
 
