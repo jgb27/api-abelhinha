@@ -27,7 +27,7 @@ export const addNewProduct = async (req, res) => {
 
     const tags = tag.replace(/\s/g, '').split(',')
 
-    const insertQuery = 'INSERT INTO products (name, price, tags, description, image_url, pdf_url) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *;';
+    const insertQuery = 'INSERT INTO products (name, price, tags, description, image_url, pdf_url) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;';
     const values = [name, price, tags, description, imageUrl, pdfUrl];
     const { rows: newProduct } = await Client.query(insertQuery, values);
 
