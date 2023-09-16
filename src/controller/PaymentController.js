@@ -6,7 +6,7 @@ export const CreateOrder = async (req, res) => {
     access_token: process.env.TOKEN_MERCADO
   })
 
-  const { _id: id, name: title, price, description } = req.body
+  const { _id: id, name: title, price } = req.body
 
   const query = 'SELECT _id FROM users WHERE _id = $1;';
   const { rows } = await Client.query(query, [req.user.userId]);
@@ -23,7 +23,7 @@ export const CreateOrder = async (req, res) => {
       description: _id,
       quantity: 1,
     }],
-    notification_url: "https://9bc5-2804-d45-9775-c500-985a-9047-4586-3fa1.ngrok.io/webhook"
+    notification_url: `${process.env.WEBHOOK}/webhook`
   },)
 
   const response = {

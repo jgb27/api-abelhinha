@@ -14,11 +14,9 @@ export const WebHook = async (req, res) => {
       const { response, body } = await mercadopago.payment.findById(payment['data.id']);
       const { status } = response;
       const id = body.additional_info.items[0].id;
-      console.log(body)
       const _id = body.additional_info.items[0].description;
 
       if (status === "approved") {
-        console.log(status);
         console.log(`Inserting ${id} in ${_id}`)
         const query = 'INSERT INTO user_product(user_id, product_id) VALUES ($1, $2);';
         const values = [_id, id];
