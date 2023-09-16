@@ -27,7 +27,7 @@ const imageStorage = multerS3({
         cb(null, `image/${process.env.ENVIRONMENT}/${hash.toString('hex')}.${extensionFile}`);
       });
     } else if (file.mimetype === 'application/pdf') {
-      cb(null, `ebook/${process.env.ENVIRONMENT} / ${file.originalname} `)
+      cb(null, `ebook/${process.env.ENVIRONMENT}/${file.originalname} `)
     } else {
       cb(new Error('Formato de arquivo não suportado!'))
     }
