@@ -19,14 +19,28 @@ export const CreateOrder = async (req, res) => {
       failure: "http://localhost:2727/failure",
       pending: "http://localhot:2727/pending"
     },
-    notification_url: ""
+    notification_url: "https://f209-2804-d45-9775-c500-985a-9047-4586-3fa1.ngrok.io/webhook"
   })
 
-  return res.status(200).send({ preferences })
+  return res.status(200).send({ preferences: preferences.body })
 }
 
-export const WebHook = (req, res) => {
-  console.log(req.quer)
+export const WebHook = async (req, res) => {
+  const payment = req.query;
+  console.log("Bruto: " + payment)
+  try {
+    if (payment.type === 'payment') {
+      console.log(payment['data.id'])
+      const data = await mercadopago.payment.findById(payment['data.id'])
+      console.log(data)
+      const paymentData = {
+        product: [{
 
-  return res.status(200).send("WebHook")
+        }]
+      }
+    }
+    return res.status(204).send("WebHook")
+  } catch (error) {
+    return res.status(500).send({ message: "Internal server error", error: error.message })
+  }
 }
