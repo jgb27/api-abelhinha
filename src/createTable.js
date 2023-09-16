@@ -6,7 +6,6 @@ const CREATE_TABLE_PRODUCT = `
     name VARCHAR(255) UNIQUE NOT NULL,
     price DECIMAL(10, 2) NOT NULL,
     tags TEXT[],
-    url VARCHAR(255) UNIQUE,
     description TEXT,
     image_url VARCHAR(255),
     pdf_url VARCHAR(255),
