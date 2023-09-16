@@ -30,7 +30,7 @@ export const Login = async (req, res) => {
   }
 }
 
-export const AuthenticateCommomUser = async (req, res, next) => {
+export const AuthenticateCommonUser = async (req, res, next) => {
   const token = req.headers['authorization'];
 
   if (!token) {

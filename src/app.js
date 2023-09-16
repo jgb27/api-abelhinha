@@ -11,7 +11,6 @@ const app = express();
 // Configurar CORS
 app.use(cors());
 
-// Diretório 'uploads' como estático
 app.use(express.json());
 app.use(morgan(':method => :url - :status | :res[content-length] - :response-time ms'))
 app.use(router);

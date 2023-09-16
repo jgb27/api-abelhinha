@@ -20,15 +20,15 @@ export const getAllProducts = async (_req, res) => {
 }
 export const addNewProduct = async (req, res) => {
   try {
-    const { name, price, tags: tag, url, description } = req.body;
+    const { name, price, tags: tag, description } = req.body;
 
     const imageUrl = req.files.image ? req.files.image[0].location : null;
     const pdfUrl = req.files.pdf ? req.files.pdf[0].location : null;
 
     const tags = tag.replace(/\s/g, '').split(',')
 
-    const insertQuery = 'INSERT INTO products (name, price, tags, url, description, image_url, pdf_url) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *;';
-    const values = [name, price, tags, url, description, imageUrl, pdfUrl];
+    const insertQuery = 'INSERT INTO products (name, price, tags, description, image_url, pdf_url) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;';
+    const values = [name, price, tags, description, imageUrl, pdfUrl];
     const { rows: newProduct } = await Client.query(insertQuery, values);
 
     return res.status(201).json({ message: 'Produto registrado com sucesso', product: newProduct[0] });
@@ -61,6 +61,18 @@ export const deleteProduct = async (req, res) => {
       Bucket: 'abelhinha-bucket',
       Key: findKey[0].image_url.split('/')[3]
     }))
+
+    const selectQuery = 'SELECT * FROM user_product where product_id=$1;'
+    const { rows: select } = await Client.query(selectQuery, [id]);
+
+    if (select.length != 0) {
+      const deleteQuery = 'DELETE FROM user_product where product_id = $1 RETURNING *;';
+      const { rows } = await Client.query(deleteQuery, [id]);
+
+      if (rows.length === 0) {
+        return res.status(404).json({ message: 'Produto não encontrado' });
+      }
+    }
 
     const query = 'DELETE FROM products WHERE _id = $1 RETURNING *;';
     const { rows: deletedProduct } = await Client.query(query, [id]);
