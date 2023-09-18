@@ -9,6 +9,30 @@ const s3 = new S3Client({
   }
 });
 
+const deletePdf = async (id) => {
+  const findId = 'SELECT pdf_url FROM products WHERE _id = $1;';
+  const { rows: findKey } = await Client.query(findId, [id]);
+
+  const namePdf = findKey[0].pdf_url.split('/')[5]
+
+  await s3.send(new DeleteObjectCommand({
+    Bucket: 'abelhinha-bucket',
+    Key: `ebook/${process.env.ENVIRONMENT}/${namePdf}`
+  }))
+}
+
+const deleteImage = async (id) => {
+  const findId = 'SELECT image_url FROM products WHERE _id = $1;';
+  const { rows: findKey } = await Client.query(findId, [id]);
+
+  const nameImg = findKey[0].image_url.split('/')[5];
+
+  await s3.send(new DeleteObjectCommand({
+    Bucket: 'abelhinha-bucket',
+    Key: `image/${process.env.ENVIRONMENT}/${nameImg}`
+  }))
+}
+
 export const getAllProducts = async (_req, res) => {
   try {
     const query = 'SELECT * FROM products;';
@@ -18,6 +42,7 @@ export const getAllProducts = async (_req, res) => {
     return res.status(500).json({ message: 'Internal server error', error: error.message });
   }
 }
+
 export const addNewProduct = async (req, res) => {
   try {
     const { name, price, tags: tag, description } = req.body;
@@ -37,6 +62,55 @@ export const addNewProduct = async (req, res) => {
   }
 }
 
+export const updateProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, price, tags: tag, description } = req.body;
+
+    const imageUrl = req.files.image ? req.files.image[0].location : null;
+    const pdfUrl = req.files.pdf ? req.files.pdf[0].location : null;
+
+    const tags = tag.replace(/\s/g, '').split(',')
+
+    const findProductQuery = 'SELECT * FROM products WHERE _id = $1;';
+    const { rows: existingProduct } = await Client.query(findProductQuery, [id]);
+
+    if (!existingProduct || existingProduct.length === 0) {
+      return res.status(404).json({ message: 'Produto não encontrado' });
+    }
+
+    const updatedFields = {};
+    if (name !== undefined) updatedFields.name = name;
+    if (price !== undefined) updatedFields.price = price;
+    if (tags !== undefined) updatedFields.tags = tags;
+    if (description !== undefined) updatedFields.description = description;
+    if (imageUrl !== null) {
+      deleteImage(id);
+      updatedFields.image_url = imageUrl;
+    }
+    if (pdfUrl !== null) {
+      deletePdf(id);
+      updatedFields.pdf_url = pdfUrl;
+    }
+
+    if (Object.keys(updatedFields).length === 0) {
+      return res.status(400).json({ message: 'Nenhum campo para atualizar' });
+    }
+
+    const updateQuery = 'UPDATE products SET ' +
+      Object.keys(updatedFields).map((field, index) => `${field} = $${index + 1}`).join(', ') +
+      ` WHERE _id = $${Object.keys(updatedFields).length + 1} RETURNING *;`;
+
+    const updateValues = [...Object.values(updatedFields), id];
+
+    const { rows: updatedProduct } = await Client.query(updateQuery, updateValues);
+
+    return res.status(200).json({ message: 'Produto atualizado com sucesso', product: updatedProduct[0] });
+  } catch (error) {
+    return res.status(500).json({ message: 'Internal server error', error: error.message });
+  }
+};
+
 export const findProductByName = async (req, res) => {
   const { name } = req.params;
   const query = 'SELECT * FROM products WHERE LOWER(name) LIKE $1;';
@@ -54,13 +128,9 @@ export const findProductByTag = async (req, res) => {
 export const deleteProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    const findId = 'SELECT image_url FROM products WHERE _id = $1;';
-    const { rows: findKey } = await Client.query(findId, [id]);
 
-    await s3.send(new DeleteObjectCommand({
-      Bucket: 'abelhinha-bucket',
-      Key: findKey[0].image_url.split('/')[3]
-    }))
+    deleteImage(id);
+    deletePdf(id);
 
     const selectQuery = 'SELECT * FROM user_product where product_id=$1;'
     const { rows: select } = await Client.query(selectQuery, [id]);

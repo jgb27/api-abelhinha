@@ -1,5 +1,5 @@
 import express from "express";
-import { addNewProduct, deleteProduct, findProductByName, findProductByTag, getAllProducts } from "./controller/ProductController.js";
+import { addNewProduct, deleteProduct, findProductByName, findProductByTag, getAllProducts, updateProduct } from "./controller/ProductController.js";
 import { Login, Authenticate, AuthenticateCommonUser } from "./controller/AuthController.js";
 import { upload } from "./config/multer.js"
 import { createUser, deleteUser, getAllUser, getProductByUser, getUser, updatedUser } from "./controller/UserController.js";
@@ -40,6 +40,7 @@ router.post("/create-order", CreateOrder)
 
 router.use(Authenticate);
 router.post("/product", upload.fields([{ name: 'image', maxCount: 1 }, { name: 'pdf', maxCount: 1 }]), addNewProduct);
+router.put("/product/:id", upload.fields([{ name: 'image', maxCount: 1 }, { name: 'pdf', maxCount: 1 }]), updateProduct);
 router.delete("/product/:id", deleteProduct);
 
 router.get("/users", getAllUser);
