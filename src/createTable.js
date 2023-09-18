@@ -30,7 +30,7 @@ const CREATE_TABLE_USER = `
     password VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
     fone VARCHAR(255) UNIQUE,
-    role VARCHAR(255) DEFAULT 'cliente',
+    role VARCHAR(255) DEFAULT "cliente",
     PRIMARY KEY (_id)
   );
 `

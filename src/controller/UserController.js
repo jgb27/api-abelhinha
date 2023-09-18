@@ -3,7 +3,15 @@ import { makeHashPassword } from "../utils/AccessUtils.js"
 
 export const createUser = async (req, res) => {
   try {
-    const { name, username, password, email, fone, role } = req.body;
+    const { name, username, password, email, fone, role: oldRole } = req.body;
+
+    let role;
+
+    if (!oldRole) {
+      role = 'cliente'
+    } else {
+      role = oldRole
+    }
 
     const insertQuery = 'INSERT INTO users (name, username, password, email, fone, role) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;';
     const hashPassword = await makeHashPassword(password)
