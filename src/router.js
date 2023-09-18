@@ -2,7 +2,7 @@ import express from "express";
 import { addNewProduct, deleteProduct, findProductByName, findProductByTag, getAllProducts } from "./controller/ProductController.js";
 import { Login, Authenticate, AuthenticateCommonUser } from "./controller/AuthController.js";
 import { upload } from "./config/multer.js"
-import { createUser, deleteUser, getAllUser, getProductByUser, getUser } from "./controller/UserController.js";
+import { createUser, deleteUser, getAllUser, getProductByUser, getUser, updatedUser } from "./controller/UserController.js";
 import { CreateOrder } from "./controller/PaymentController.js";
 import { WebHook } from "./controller/Webhook.js";
 
@@ -34,6 +34,7 @@ router.post("/verify", (req, res) => {
 router.use(AuthenticateCommonUser)
 router.get("/product", getProductByUser)
 router.get("/user", getUser);
+router.put("/user/:id", updatedUser);
 
 router.post("/create-order", CreateOrder)
 
