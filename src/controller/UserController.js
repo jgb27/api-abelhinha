@@ -25,9 +25,48 @@ export const createUser = async (req, res) => {
   }
 }
 
+export const updatedUser = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const { name, username, password, email, fone, role: oldRole } = req.body;
+
+    const findUserQuery = 'SELECT * FROM users WHERE _id = $1;';
+    const { rows: existingUser } = await Client.query(findUserQuery, [userId]);
+
+    if (!existingUser || existingUser.length === 0) {
+      return res.status(404).json({ message: 'Usuário não encontrado' });
+    }
+
+    const updatedFields = {};
+    if (name !== undefined) updatedFields.name = name;
+    if (username !== undefined) updatedFields.username = username;
+    if (password !== undefined) updatedFields.password = await makeHashPassword(password);
+    if (email !== undefined) updatedFields.email = email;
+    if (fone !== undefined) updatedFields.fone = fone;
+    if (oldRole !== undefined) updatedFields.role = oldRole;
+
+    if (Object.keys(updatedFields).length === 0) {
+      return res.status(400).json({ message: 'Nenhum campo para atualizar' });
+    }
+
+    const updateQuery = 'UPDATE users SET ' +
+      Object.keys(updatedFields).map((field, index) => `${field} = $${index + 1}`).join(', ') +
+      ` WHERE _id = $${Object.keys(updatedFields).length + 1} RETURNING *;`;
+
+    const updateValues = Object.values(updatedFields);
+    updateValues.push(userId);
+
+    const { rows: updatedUser } = await Client.query(updateQuery, updateValues);
+
+    return res.status(200).json({ message: 'Usuário atualizado com sucesso', user: updatedUser[0] });
+  } catch (error) {
+    return res.status(500).json({ message: 'Internal server error', error: error.message });
+  }
+};
+
 export const getAllUser = async (_req, res) => {
   try {
-    const getQuery = 'SELECT name, username, email, fone, role FROM users;';
+    const getQuery = 'SELECT _id, name, username, email, fone, role FROM users;';
     const { rows: users } = await Client.query(getQuery);
     return res.status(200).json(users)
   } catch (error) {
